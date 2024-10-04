@@ -38,14 +38,15 @@ function validateForm(
   gioLam
 ) {
   const taiKhoanRegex = /^\d{4,6}$/;
-  const nameRegex = /^[A-Za-z\s]+$/;
+  const nameRegex = /^[A-Za-zÀ-ỹ]+(?: [A-Za-zÀ-ỹ]+)*$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex =
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,10}$/;
 
   if (!taiKhoanRegex.test(taiKhoan))
     return "Tài khoản không hợp lệ (4-6 ký số)";
-  if (!nameRegex.test(name)) return "Tên nhân viên không hợp lệ (phải là chữ)";
+  if (!nameRegex.test(name))
+    return "Tên nhân viên không hợp lệ (Không được để trống)";
   if (!emailRegex.test(email)) return "Email không hợp lệ";
   if (!passwordRegex.test(password))
     return "Mật khẩu không hợp lệ (6-10 ký tự, chứa ít nhất 1 số, 1 chữ in hoa, 1 ký tự đặc biệt)";
@@ -127,6 +128,7 @@ function deleteEmployee(tkDelete) {
   setLocalStorage();
   getLocalStorage();
 }
+//xem
 function findEmployee(indexFind) {
   let staffObj = staffSer.findIndex(indexFind);
   document.querySelector("#tknv").value = staffObj.taiKhoan;
@@ -137,7 +139,11 @@ function findEmployee(indexFind) {
   document.querySelector("#luongCB").value = staffObj.luongCB;
   document.querySelector("#chucvu").value = staffObj.chucVu;
   document.querySelector("#gioLam").value = staffObj.gioLam;
+  document.getElementById("header-title").textContent = "Thông Tin Nhân Viên";
+  document.getElementById("btnThemNV").style.display = "none";
+  document.getElementById("btnCapNhat").style.display = "Block";
 }
+//  update
 function updateEmployee() {
   let taiKhoan = document.getElementById("tknv").value;
   let name = document.getElementById("name").value;
@@ -178,18 +184,12 @@ function updateEmployee() {
   setLocalStorage();
   getLocalStorage();
 }
-
+// tìm kiếm theo tên
 function searchEmployee() {
   let valueSearch = document.querySelector("#searchName").value;
   let result = staffSer.searchStaff(valueSearch);
   hienThiTable(result);
 }
-// khi nhấn nút xem
-document.getElementById("xem").onclick = function () {
-  document.getElementById("header-title").textContent = "Thông Tin Nhân Viên";
-  document.getElementById("btnThemNV").style.display = "none";
-  document.getElementById("btnCapNhat").style.display = "Block";
-};
 // reset modal
 document.getElementById("btnThem").onclick = function () {
   document.querySelector("#tknv").value = "";

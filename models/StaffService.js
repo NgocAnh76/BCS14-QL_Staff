@@ -28,6 +28,7 @@ class StaffService {
     });
     this.arrStaff[indexUpdate] = objUpdate;
   }
+  // tìm kiếm
   searchStaff(valueSearch) {
     let userSearch = this.arrStaff.filter((value) => {
       return value.name.toUpperCase().includes(valueSearch.toUpperCase());
