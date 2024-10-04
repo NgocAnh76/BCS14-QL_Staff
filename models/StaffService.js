@@ -11,17 +11,14 @@ class StaffService {
     let indexDel = this.arrStaff.findIndex(function (staff) {
       return staff.taiKhoan == tkDelete;
     });
-    console.log(tkDelete, indexDel);
     // xoá
     this.arrStaff.splice(indexDel, 1);
   }
   // Xem chi tiết
-  fixStaff(tkFix) {
-    console.log(tkFix);
+  findIndex(indexFind) {
     let staffObj = this.arrStaff.find(function (staff) {
-      return staff.taiKhoan == tkFix;
+      return staff.taiKhoan == indexFind;
     });
-    console.log(staffObj);
     return staffObj;
   }
   // Sửa ds nhân viên
@@ -30,5 +27,11 @@ class StaffService {
       return staff.taiKhoan == objUpdate.taiKhoan;
     });
     this.arrStaff[indexUpdate] = objUpdate;
+  }
+  searchStaff(valueSearch) {
+    let userSearch = this.arrStaff.filter((value) => {
+      return value.name.toUpperCase().includes(valueSearch.toUpperCase());
+    });
+    return userSearch;
   }
 }

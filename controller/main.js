@@ -14,7 +14,7 @@ function hienThiTable(arrStaff) {
     <td>${staff.tongLuong}</td>
     <td>${staff.xepLoai}</td>
     <td> 
-    <button  data-toggle="modal" data-target="#myModal" class= "btn btn-info" onclick="fixEmployee('${staff.taiKhoan}')">Xem</button>
+    <button id="xem"  data-toggle="modal" data-target="#myModal" class= " btn btn-info" onclick="findEmployee('${staff.taiKhoan}')">Xem</button>
     <button  class= "btn btn-danger" onclick="deleteEmployee('${staff.taiKhoan}')">Xoá</button>
     </td>
 
@@ -24,6 +24,40 @@ function hienThiTable(arrStaff) {
 
   // console.log(contentTable);
   document.querySelector("#tableDanhSach").innerHTML = contentTable;
+}
+
+// validation
+function validateForm(
+  taiKhoan,
+  name,
+  email,
+  password,
+  date,
+  luongCB,
+  chucVu,
+  gioLam
+) {
+  const taiKhoanRegex = /^\d{4,6}$/;
+  const nameRegex = /^[A-Za-z\s]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,10}$/;
+
+  if (!taiKhoanRegex.test(taiKhoan))
+    return "Tài khoản không hợp lệ (4-6 ký số)";
+  if (!nameRegex.test(name)) return "Tên nhân viên không hợp lệ (phải là chữ)";
+  if (!emailRegex.test(email)) return "Email không hợp lệ";
+  if (!passwordRegex.test(password))
+    return "Mật khẩu không hợp lệ (6-10 ký tự, chứa ít nhất 1 số, 1 chữ in hoa, 1 ký tự đặc biệt)";
+  if (!date) return "Ngày làm không được để trống";
+  if (luongCB < 1000000 || luongCB > 20000000)
+    return "Lương cơ bản không hợp lệ (1.000.000 - 20.000.000)";
+  if (!["Sếp", "Trưởng phòng", "Nhân viên"].includes(chucVu))
+    return "Chức vụ không hợp lệ";
+  if (gioLam < 80 || gioLam > 200)
+    return "Số giờ làm không hợp lệ (80-200 giờ)";
+
+  return null;
 }
 
 // Lấy dữ liệu và lưu xuống localStorage
@@ -51,22 +85,22 @@ function addEmployee() {
   let luongCB = document.getElementById("luongCB").value * 1;
   let chucVu = document.getElementById("chucvu").value;
   let gioLam = document.getElementById("gioLam").value * 1;
+
   // console.log(taiKhoan, name, email, password, date, luongCB, chucVu, gioLam);
-  // validation
-  // const validationError = Staff.validateAll(
-  //   taiKhoan,
-  //   name,
-  //   email,
-  //   password,
-  //   date,
-  //   luongCB,
-  //   chucVu,
-  //   gioLam
-  // );
-  // if (validationError) {
-  //   alert(validationError);
-  //   return; // Dừng lại nếu có lỗi
-  // }
+  const validateMessage = validateForm(
+    taiKhoan,
+    name,
+    email,
+    password,
+    date,
+    luongCB,
+    chucVu,
+    gioLam
+  );
+  if (validateMessage) {
+    alert(validateMessage);
+    return;
+  }
   // B2: Tạo đối tượng nhân viên mới
   let newStaff = new Staff(
     taiKhoan,
@@ -80,12 +114,9 @@ function addEmployee() {
   );
   newStaff.tinhLuong();
   newStaff.xepLoaiNv();
-  // console.log(newStaff);
   // B3: Lưu vào mảng
   staffSer.addStaff(newStaff);
-  // console.log(staffSer.arrStaff);
   // B4: đưa dữ liệu lên UI
-  // hienThiTable(staffSer.arrStaff);
   setLocalStorage();
   getLocalStorage();
 }
@@ -96,8 +127,8 @@ function deleteEmployee(tkDelete) {
   setLocalStorage();
   getLocalStorage();
 }
-function fixEmployee(tkFix) {
-  let staffObj = staffSer.fixStaff(tkFix);
+function findEmployee(indexFind) {
+  let staffObj = staffSer.findIndex(indexFind);
   document.querySelector("#tknv").value = staffObj.taiKhoan;
   document.querySelector("#name").value = staffObj.name;
   document.querySelector("#email").value = staffObj.email;
@@ -117,6 +148,20 @@ function updateEmployee() {
   let chucVu = document.getElementById("chucvu").value;
   let gioLam = document.getElementById("gioLam").value * 1;
 
+  const validateMessage = validateForm(
+    taiKhoan,
+    name,
+    email,
+    password,
+    date,
+    luongCB,
+    chucVu,
+    gioLam
+  );
+  if (validateMessage) {
+    alert(validateMessage);
+    return;
+  }
   let objUpdate = new Staff(
     taiKhoan,
     name,
@@ -133,3 +178,29 @@ function updateEmployee() {
   setLocalStorage();
   getLocalStorage();
 }
+
+function searchEmployee() {
+  let valueSearch = document.querySelector("#searchName").value;
+  let result = staffSer.searchStaff(valueSearch);
+  hienThiTable(result);
+}
+// khi nhấn nút xem
+document.getElementById("xem").onclick = function () {
+  document.getElementById("header-title").textContent = "Thông Tin Nhân Viên";
+  document.getElementById("btnThemNV").style.display = "none";
+  document.getElementById("btnCapNhat").style.display = "Block";
+};
+// reset modal
+document.getElementById("btnThem").onclick = function () {
+  document.querySelector("#tknv").value = "";
+  document.querySelector("#name").value = "";
+  document.querySelector("#email").value = "";
+  document.querySelector("#password").value = "";
+  document.querySelector("#datepicker").value = "";
+  document.querySelector("#luongCB").value = "";
+  document.querySelector("#chucvu").value = "";
+  document.querySelector("#gioLam").value = "";
+  document.getElementById("header-title").textContent = "Log In";
+  document.getElementById("btnThemNV").style.display = "block";
+  document.getElementById("btnCapNhat").style.display = "none";
+};

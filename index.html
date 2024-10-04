@@ -137,6 +137,7 @@
                     id="btnThem"
                     data-toggle="modal"
                     data-target="#myModal"
+                    onclick="hiddenButton()"
                   >
                     Thêm nhân viên
                   </button>
@@ -152,11 +153,14 @@
                     <input
                       type="text"
                       class="form-control"
-                      placeholder="Loại nhân viên"
+                      placeholder="Tên nhân viên"
                       id="searchName"
                     />
                     <div class="input-group-prepend">
-                      <span class="input-group-text" id="btnTimNV"
+                      <span
+                        class="input-group-text"
+                        id="btnTimNV"
+                        onclick="searchEmployee()"
                         ><i class="fa fa-search"></i
                       ></span>
                     </div>
